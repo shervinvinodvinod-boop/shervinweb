@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shervin Vinod | Cloud Computing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-weight: 700; font-size: 1.1rem;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: #94a3b8; text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #38bdf8; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      background: radial-gradient(ellipse at top, #0f2744 0%, #0f172a 60%);
+    }
+    .hero-inner { max-width: 650px; }
+    .avatar {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; font-weight: 700; color: #0f172a;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 0 40px rgba(56,189,248,0.25);
+    }
+    .hero-name {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
+    }
+    .hero-name span {
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-role { margin-top: 0.8rem; font-size: 1rem; color: #94a3b8; }
+    .hero-desc {
+      margin-top: 1rem; font-size: 0.92rem;
+      color: #64748b; line-height: 1.7;
+    }
+    .badge {
+      display: inline-block; margin-top: 1.2rem;
+      background: rgba(56,189,248,0.08);
+      border: 1px solid rgba(56,189,248,0.2);
+      color: #38bdf8; font-size: 0.77rem; font-weight: 600;
+      padding: 0.32rem 0.9rem; border-radius: 999px;
+    }
+    .hero-btns {
+      margin-top: 2rem; display: flex; gap: 0.8rem;
+      justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.65rem 1.6rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-blue {
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      color: #0f172a;
+    }
+    .btn-blue:hover { opacity: 0.85; }
+    .btn-ghost { border: 1px solid #334155; color: #94a3b8; }
+    .btn-ghost:hover { border-color: #38bdf8; color: #38bdf8; }
+
+    /* SECTIONS */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .section-title {
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em;
+    }
+    .divider {
+      width: 36px; height: 3px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      border-radius: 2px; margin: 0.5rem 0 2rem;
+    }
+    .section-sub { color: #64748b; font-size: 0.88rem; margin-bottom: 2rem; margin-top: -1.2rem; }
+
+    /* ABOUT */
+    #about { background: #0f172a; }
+    .about-text {
+      color: #94a3b8; line-height: 1.8; font-size: 0.93rem; margin-bottom: 1.5rem;
+    }
+    .about-text strong { color: #e2e8f0; }
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;
+    }
+    .card {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 10px; padding: 1.2rem;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #38bdf8; }
+    .card-icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
+    .card-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 0.25rem; }
+    .card-value { font-size: 0.88rem; font-weight: 500; color: #e2e8f0; }
+    .email-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      color: #38bdf8; font-size: 0.88rem; text-decoration: none;
+      border: 1px solid rgba(56,189,248,0.2);
+      padding: 0.4rem 0.9rem; border-radius: 7px;
+      background: rgba(56,189,248,0.05);
+      transition: background 0.2s;
+    }
+    .email-link:hover { background: rgba(56,189,248,0.1); }
+
+    /* SKILLS */
+    #skills { background: #080f1d; }
+    .skills-wrap { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .skill {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 7px; padding: 0.4rem 0.9rem;
+      font-size: 0.83rem; font-weight: 500; color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .skill:hover { border-color: #38bdf8; color: #38bdf8; background: rgba(56,189,248,0.06); }
+
+    /* CONTACT */
+    #contact { background: #0f172a; }
+    .form-box {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 14px; padding: 1.8rem; max-width: 580px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    label {
+      display: block; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: #64748b; margin-bottom: 0.35rem;
+    }
+    input, textarea {
+      width: 100%; background: #0f172a;
+      border: 1px solid #334155; border-radius: 7px;
+      padding: 0.7rem 0.9rem; color: #e2e8f0;
+      font-family: 'Inter', sans-serif; font-size: 0.88rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus { border-color: #38bdf8; }
+    textarea { resize: vertical; min-height: 100px; }
+    .submit-btn {
+      width: 100%; padding: 0.8rem;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      border: none; border-radius: 8px;
+      color: #0f172a; font-family: 'Inter', sans-serif;
+      font-weight: 700; font-size: 0.92rem;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .alert {
+      margin-top: 0.8rem; padding: 0.7rem 0.9rem;
+      border-radius: 7px; font-size: 0.83rem;
+    }
+    .alert-success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); color: #34d399; }
+    .alert-error   { background: rgba(239,68,68,0.08);  border: 1px solid rgba(239,68,68,0.25);  color: #f87171; }
+
+    /* FOOTER */
+    footer {
+      background: #080f1d; border-top: 1px solid #1e293b;
+      padding: 1.4rem 2rem; text-align: center;
+      color: #475569; font-size: 0.8rem;
+    }
+
+    @media (max-width: 600px) {
+      .info-grid { grid-template-columns: 1fr; }
+      .form-row  { grid-template-columns: 1fr; }
+      .nav-links { gap: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Shervin Vinod</div>
+    <ul class="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="avatar">SV</div>
+      <h1 class="hero-name">Hi, I'm <span>Shervin Vinod</span></h1>
+      <p class="hero-role">BCA Cloud Computing Student</p>
+      <p class="hero-desc">
+        Passionate about cloud architecture, DevOps, and modern infrastructure.<br/>
+        Building tomorrow's solutions from Bengaluru, Karnataka.
+      </p>
+      <div class="badge">☁️ Kristu Jayanti (Deemed to be University)</div>
+      <div class="hero-btns">
+        <a href="#contact" class="btn btn-blue">Get In Touch</a>
+        <a href="#about" class="btn btn-ghost">About Me</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <p class="section-title">About Me</p>
+      <div class="divider"></div>
+      <p class="about-text">
+        I'm <strong>Shervin Vinod</strong>, a <strong>BCA Cloud Computing</strong> student at
+        <strong>Kristu Jayanti (Deemed to be University)</strong>, Bengaluru. I'm passionate about
+        cloud platforms, distributed systems, and building scalable solutions — always eager to
+        learn and collaborate on meaningful tech projects.
+      </p>
+      <a href="mailto:Shervinvinodvinod@gmail.com" class="email-link">
+        ✉️ Shervinvinodvinod@gmail.com
+      </a>
+      <div class="info-grid">
+        <div class="card">
+          <div class="card-icon">🎓</div>
+          <div class="card-label">Degree</div>
+          <div class="card-value">BCA Cloud Computing</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏛️</div>
+          <div class="card-label">University</div>
+          <div class="card-value">Kristu Jayanti (Deemed to be University)</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📍</div>
+          <div class="card-label">Location</div>
+          <div class="card-value">Bengaluru, Karnataka</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💡</div>
+          <div class="card-label">Focus</div>
+          <div class="card-value">Cloud Architecture & DevOps</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container">
+      <p class="section-title">Skills & Technologies</p>
+      <div class="divider"></div>
+      <div class="skills-wrap">
+        <div class="skill">☁️ AWS</div>
+        <div class="skill">🌐 Google Cloud</div>
+        <div class="skill">🐧 Linux</div>
+        <div class="skill">🐍 Python</div>
+        <div class="skill">🌐 JavaScript</div>
+        <div class="skill">🟢 Supabase</div>
+        <div class="skill">🌍 Networking</div>
+        <div class="skill">🐙 Git & GitHub</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-title">Send a Message</p>
+      <div class="divider"></div>
+      <p class="section-sub">Have a project or opportunity? I'd love to hear from you.</p>
+      <div class="form-box">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">Name</label>
+            <input type="text" id="fname" placeholder="Your name" />
+          </div>
+          <div class="form-group">
+            <label for="femail">Email</label>
+            <input type="email" id="femail" placeholder="your@email.com" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fmessage">Message</label>
+          <textarea id="fmessage" placeholder="Write your message here..."></textarea>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">Send Message</button>
+        <div id="formAlert" style="display:none"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 Shervin Vinod · BCA Cloud Computing · Kristu Jayanti University, Bengaluru
+  </footer>
+
+  <script>
+    const SUPABASE_URL     = 'https://qeflqhjtpwhdlvrejjry.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlZmxxaGp0cHdoZGx2cmVqanJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDY5MTAsImV4cCI6MjA5MDAyMjkxMH0.ouSE1zTHXWa0swC46KWtqN5ISLn4K1yz5Xs6EhC5pyw';
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function submitFeedback() {
+      const name    = document.getElementById('fname').value.trim();
+      const email   = document.getElementById('femail').value.trim();
+      const message = document.getElementById('fmessage').value.trim();
+      const btn     = document.getElementById('submitBtn');
+
+      if (!name || !email || !message) {
+        showAlert('Please fill in all fields.', 'error'); return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showAlert('Please enter a valid email address.', 'error'); return;
+      }
+
+      btn.disabled = true; btn.textContent = 'Sending...';
+
+      try {
+        const { error } = await sb.from('feedback').insert([{ name, email, message }]);
+        if (error) throw error;
+        showAlert('✅ Message sent! Thank you, ' + name + '.', 'success');
+        document.getElementById('fname').value = '';
+        document.getElementById('femail').value = '';
+        document.getElementById('fmessage').value = '';
+      } catch (err) {
+        showAlert('❌ Error: ' + (err.message || 'Please try again.'), 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Send Message';
+      }
+    }
+
+    function showAlert(msg, type) {
+      const el = document.getElementById('formAlert');
+      el.className = 'alert alert-' + type;
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+  </script>
+</body>
+</html>
